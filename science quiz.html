@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Science Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .question h3 {
+      margin-bottom: 10px;
+    }
+    .options label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .click {
+      border: none;
+      border-radius: 15px;
+      background-color: rgb(85, 85, 247);
+      width: 100%;
+      height: 70px;
+      font-size: 100%;
+      font-weight: bold;
+      text-align: center;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Science Quiz</h1>
+  <form id="quiz">
+    <div class="quiz-container">
+      <div class="question"></div>
+      <button class="click" id="btn" type="submit">Submit</button>
+    </div>
+  </form>
+  <script>
+    const questions = [
+      {
+        question: "What is the chemical symbol for water?",
+        options: { A: "H2O", B: "CO2", C: "NaCl", D: "O2" },
+        answer: "A"
+      },
+      {
+        question: "Which planet is known as the Red Planet?",
+        options: { A: "Venus", B: "Mars", C: "Jupiter", D: "Saturn" },
+        answer: "B"
+      },
+      {
+        question: "What gas do plants absorb from the atmosphere during photosynthesis?",
+        options: { A: "Oxygen", B: "Nitrogen", C: "Carbon Dioxide", D: "Helium" },
+        answer: "C"
+      },
+      {
+        question: "What is the hardest natural substance on Earth?",
+        options: { A: "Gold", B: "Diamond", C: "Iron", D: "Granite" },
+        answer: "B"
+      },
+      {
+        question: "Which part of the human cell contains the genetic material?",
+        options: { A: "Cytoplasm", B: "Mitochondria", C: "Nucleus", D: "Ribosome" },
+        answer: "C"
+      },
+      {
+        question: "What is the speed of light in a vacuum?",
+        options: { A: "300,000 km/s", B: "150,000 km/s", C: "1,000 km/s", D: "3,000 km/s" },
+        answer: "A"
+      },
+      {
+        question: "Which planet is the largest in our solar system?",
+        options: { A: "Earth", B: "Saturn", C: "Jupiter", D: "Neptune" },
+        answer: "C"
+      },
+      {
+        question: "What is the most abundant gas in Earth's atmosphere?",
+        options: { A: "Oxygen", B: "Carbon Dioxide", C: "Nitrogen", D: "Hydrogen" },
+        answer: "C"
+      }
+    ];
+let currentQuestionIndex = 0; // keeps track of the current question
+let score = 0; // keeps track of the user's score
+const userResponses = []; // array to track user's responses for each question
+
+// function to update and display the current question
+const updateQuestion = () => {
+  const currentQuestion = questions[currentQuestionIndex];
+  const questionElement = document.querySelector(".question");
+  questionElement.innerHTML = `
+    <h3>${currentQuestionIndex + 1}. ${currentQuestion.question}</h3>
+    <div class="options">
+      ${Object.entries(currentQuestion.options).map(([key, value]) => `
+        <label>
+          <input type="radio" name="${currentQuestionIndex}" value="${key}" />
+          ${key}) ${value}
+        </label>
+      `).join('')}
+    </div>
+  `;
+
+  // add event listeners to the answer choices
+  document.querySelectorAll(`input[name="${currentQuestionIndex}"]`).forEach(input => {
+    input.addEventListener('change', () => {
+      userResponses[currentQuestionIndex] = input.value;
+      // optionally, you can update UI or handle changes here
+    });
+  });
+};
+
+// function to check if the user's answer is correct and update the score
+const checkAnswer = () => {
+  const selectedOption = document.querySelector(`input[name="${currentQuestionIndex}"]:checked`);
+  const userSelection = selectedOption ? selectedOption.value : null;
+  userResponses[currentQuestionIndex] = userSelection;
+
+  if (userSelection === questions[currentQuestionIndex].answer) {
+    score++;
+  }
+};
+
+// function to display the quiz results
+const showResults = () => {
+  let resultHTML = `<h2>Your Score: ${score} out of ${questions.length}</h2>`;
+  resultHTML += '<h3>Your Answers:</h3><ul>';
+
+  questions.forEach((question, index) => {
+    const correctAnswer = question.answer;
+    const userAnswer = userResponses[index] || 'No answer';
+
+    resultHTML += `
+      <li>
+        ${index + 1}. ${question.question}<br />
+        Your answer: ${userAnswer} (Correct: ${correctAnswer})
+      </li>`;
+  });
+
+  resultHTML += '</ul>';
+  document.querySelector(".quiz-container").innerHTML = resultHTML;
+};
+
+// event listener for form submission
+document.getElementById("quiz").addEventListener("submit", function (event) {
+  event.preventDefault(); // prevent the form from submitting normally
+
+  checkAnswer(); 
+
+  currentQuestionIndex++; // move to the next question
+
+  if (currentQuestionIndex < questions.length) {
+    updateQuestion(); // update the quiz with the next question
+  } else {
+    showResults();  
+    document.getElementById("btn").disabled = true; // disable the submit button
+    document.querySelectorAll('input[name^="q"]').forEach(input => input.disabled = true); // disable all options
+  }
+});
+
+updateQuestion(); 
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Quiz</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+      .quiz-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+      }
+      .question {
+        margin-bottom: 20px;
+      }
+      .question h3 {
+        margin-bottom: 10px;
+      }
+      .options label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .click {
+        border: none;
+        border-radius: 15px;
+        background-color: rgb(85, 85, 247);
+        width: 100%;
+        height: 70px;
+        font-size: 100%;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+   
+
+
+    </style>
+  </head>
+  <body>
+    <h1>Math Quiz</h1>
+    <form id="quiz">
+      <div class="quiz-container">
+        <div class="question"></div>
+        <button class="click" id="btn" type="submit">Submit</button>
+      </div>
+    </form>
+    <script>
+          const questions = [
+            {
+                question: "What is the value of π (pi) to two decimal places?",
+                options: { A: "3.12", B: "3.14", C: "3.16", D: "3.18" },
+                answer: "B"
+            },
+            {
+                question: "What is the square root of 64?",
+                options: { A: "6", B: "7", C: "8", D: "9" },
+                answer: "C"
+            },
+            {
+                question: "What is 25% of 200?",
+                options: { A: "25", B: "50", C: "75", D: "100" },
+                answer: "B"
+            },
+            {
+                question: "What is 7 times 8?",
+                options: { A: "48", B: "54", C: "56", D: "64" },
+                answer: "C"
+            },
+            {
+                question: "If a triangle has sides of length 3, 4, and 5, what type of triangle is it?",
+                options: { A: "Equilateral", B: "Isosceles", C: "Scalene", D: "Right-angled" },
+                answer: "D"
+            },
+            {
+                question: "What is the area of a circle with a radius of 7? (Use π = 3.14)",
+                options: { A: "154", B: "144", C: "132", D: "121" },
+                answer: "A"
+            },
+            {
+                question: "What is the solution to the equation 2x + 5 = 13?",
+                options: { A: "3", B: "4", C: "6", D: "8" },
+                answer: "B"
+            },
+            {
+                question: "What is the next prime number after 7?",
+                options: { A: "9", B: "10", C: "11", D: "13" },
+                answer: "C"
+            }
+        ];
+
+let currentQuestionIndex = 0; // keeps track of the current question
+let score = 0; // keeps track of the user's score
+const userResponses = []; // array to track user's responses for each question
+
+// function to update and display the current question
+const updateQuestion = () => {
+  const currentQuestion = questions[currentQuestionIndex];
+  const questionElement = document.querySelector(".question");
+  questionElement.innerHTML = `
+    <h3>${currentQuestionIndex + 1}. ${currentQuestion.question}</h3>
+    <div class="options">
+      ${Object.entries(currentQuestion.options).map(([key, value]) => `
+        <label>
+          <input type="radio" name="${currentQuestionIndex}" value="${key}" />
+          ${key}) ${value}
+        </label>
+      `).join('')}
+    </div>
+  `;
+
+  // add event listeners to the answer choices
+  document.querySelectorAll(`input[name="${currentQuestionIndex}"]`).forEach(input => {
+    input.addEventListener('change', () => {
+      userResponses[currentQuestionIndex] = input.value;
+      // optionally, you can update UI or handle changes here
+    });
+  });
+};
+
+// function to check if the user's answer is correct and update the score
+const checkAnswer = () => {
+  const selectedOption = document.querySelector(`input[name="${currentQuestionIndex}"]:checked`);
+  const userSelection = selectedOption ? selectedOption.value : null;
+  userResponses[currentQuestionIndex] = userSelection;
+
+  if (userSelection === questions[currentQuestionIndex].answer) {
+    score++;
+  }
+};
+
+// function to display the quiz results
+const showResults = () => {
+  let resultHTML = `<h2>Your Score: ${score} out of ${questions.length}</h2>`;
+  resultHTML += '<h3>Your Answers:</h3><ul>';
+
+  questions.forEach((question, index) => {
+    const correctAnswer = question.answer;
+    const userAnswer = userResponses[index] || 'No answer';
+
+    resultHTML += `
+      <li>
+        ${index + 1}. ${question.question}<br />
+        Your answer: ${userAnswer} (Correct: ${correctAnswer})
+      </li>`;
+  });
+
+  resultHTML += '</ul>';
+  document.querySelector(".quiz-container").innerHTML = resultHTML;
+};
+
+// event listener for form submission
+document.getElementById("quiz").addEventListener("submit", function (event) {
+  event.preventDefault(); // prevent the form from submitting normally
+
+  checkAnswer(); 
+
+  currentQuestionIndex++; // move to the next question
+
+  if (currentQuestionIndex < questions.length) {
+    updateQuestion(); // update the quiz with the next question
+  } else {
+    showResults();  
+    document.getElementById("btn").disabled = true; // disable the submit button
+    document.querySelectorAll('input[name^="q"]').forEach(input => input.disabled = true); // disable all options
+  }
+});
+
+updateQuestion(); 
+</script>
+</body>
+</html>
